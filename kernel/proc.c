@@ -589,7 +589,6 @@ kill(int pid)
         p->state = RUNNABLE;
       }
       release(&p->lock);
-      printf("kernel/proc.c: kill\n");
       return 0;
     }
     release(&p->lock);

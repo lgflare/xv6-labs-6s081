@@ -80,7 +80,6 @@ sys_kill(void)
 
   if(argint(0, &pid) < 0)
     return -1;
-  printf("kernel/sysproc.c: sys_kill\n");
   return kill(pid);
 }
 

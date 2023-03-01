@@ -11,7 +11,6 @@ main(int argc, char **argv)
     fprintf(2, "usage: kill pid...\n");
     exit(1);
   }
-  printf("user/kill.c\n");
   for(i=1; i<argc; i++)
     kill(atoi(argv[i]));
   exit(0);
