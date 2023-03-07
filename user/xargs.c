@@ -35,7 +35,7 @@ main(int argc, char *argv[]) {
       j = 0;
       i++;
       continue;
-    } else if (buf[j] == '\n' || buf[j] == 0) {
+    } else if (buf[j] == '\n') {
       buf[j] = 0;
       inst_args[i] = (char*)malloc(BUFSIZE);
       memmove(inst_args[i], buf, j);
