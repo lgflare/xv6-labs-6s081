@@ -5,6 +5,7 @@
 
 #define BUFSIZE 30
 
+// for debugging
 void
 show_args(char *argv[]) {
   int i = 0;
