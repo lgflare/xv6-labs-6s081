@@ -1,47 +1,22 @@
-xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
-Version 6 (v6).  xv6 loosely follows the structure and style of v6,
-but is implemented for a modern RISC-V multiprocessor using ANSI C.
+# MIT 6.S081是什么？
+6.S081是麻省理工学院（Massachusetts Institute of Technology）的操作系统实验课程，学生可在教学操作系统xv6上动手实现相关操作系统特性和功能，以理论-实践相结合的方式加深对操作系统的认识。
 
-ACKNOWLEDGMENTS
+你可以在课程页面获得课程讲义以及实验代码相关的内容
 
-xv6 is inspired by John Lions's Commentary on UNIX 6th Edition (Peer
-to Peer Communications; ISBN: 1-57398-013-7; 1st edition (June 14,
-2000)). See also https://pdos.csail.mit.edu/6.828/, which
-provides pointers to on-line resources for v6.
+课程页面：https://pdos.csail.mit.edu/6.S081/2021/index.html
 
-The following people have made contributions: Russ Cox (context switching,
-locking), Cliff Frey (MP), Xiao Yu (MP), Nickolai Zeldovich, and Austin
-Clements.
+xv6（RISC-V）手册：https://pdos.csail.mit.edu/6.S081/2021/xv6/book-riscv-rev2.pdf
+# 这份文档包括哪些内容？
+这份文档包括作者在学习该课程的过程中，阅读xv6 book后所总结的核心知识，动手实验后所写的实验报告以及其他想写的东西。
+# 为什么要写这份文档？
+一方面是对学习的知识和积累的工程经验做总结，梳理自己的学习和实践过程，希望能重温知识并尝试找到可改进的地方；另一方面是可以当作博客写简历里面qwq
 
-We are also grateful for the bug reports and patches contributed by
-Takahiro Aoyagi, Silas Boyd-Wickizer, Anton Burtsev, Ian Chen, Dan
-Cross, Cody Cutler, Mike CAT, Tej Chajed, Asami Doi, eyalz800, Nelson
-Elhage, Saar Ettinger, Alice Ferrazzi, Nathaniel Filardo, flespark,
-Peter Froehlich, Yakir Goaron,Shivam Handa, Matt Harvey, Bryan Henry,
-jaichenhengjie, Jim Huang, Matúš Jókay, Alexander Kapshuk, Anders
-Kaseorg, kehao95, Wolfgang Keller, Jungwoo Kim, Jonathan Kimmitt,
-Eddie Kohler, Vadim Kolontsov , Austin Liew, l0stman, Pavan
-Maddamsetti, Imbar Marinescu, Yandong Mao, , Matan Shabtay, Hitoshi
-Mitake, Carmi Merimovich, Mark Morrissey, mtasm, Joel Nider,
-OptimisticSide, Greg Price, Jude Rich, Ayan Shafqat, Eldar Sehayek,
-Yongming Shen, Fumiya Shigemitsu, Cam Tenny, tyfkda, Warren Toomey,
-Stephen Tu, Rafael Ubal, Amane Uehara, Pablo Ventura, Xi Wang, Keiichi
-Watanabe, Nicolas Wolovick, wxdao, Grant Wu, Jindong Zhang, Icenowy
-Zheng, ZhUyU1997, and Zou Chang Wei.
+<u>尽管在学习的过程中时时刻刻感知到自己是如此的菜，但学习的目的并不是卷过别人，而是为了自我实现，所以专注于自我提高，不要妄自菲薄。</u>
+# 实现代码的地址
+全部实验代码：https://gitee.com/lgflare/xv6-labs-6s081
 
-The code in the files that constitute xv6 is
-Copyright 2006-2020 Frans Kaashoek, Robert Morris, and Russ Cox.
+不同实验进度可以访问同一仓库下的不同分支，这些分支已按照实验项目名进行命名。
 
-ERROR REPORTS
-
-Please send errors and suggestions to Frans Kaashoek and Robert Morris
-(kaashoek,rtm@mit.edu). The main purpose of xv6 is as a teaching
-operating system for MIT's 6.S081, so we are more interested in
-simplifications and clarifications than new features.
-
-BUILDING AND RUNNING XV6
-
-You will need a RISC-V "newlib" tool chain from
-https://github.com/riscv/riscv-gnu-toolchain, and qemu compiled for
-riscv64-softmmu. Once they are installed, and in your shell
-search path, you can run "make qemu".
+6.S081官方仓库并没有在github上发布，我为了在个人git仓库中管理这些代码，将原仓库的一部分文件迁移了过来，但可能因为某些依赖原因，无法像原仓库一样实现自动评分功能，但可以正常通过make qemu启动xv6。
+# 关于作者
+lgf
