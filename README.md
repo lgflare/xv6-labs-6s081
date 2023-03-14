@@ -19,6 +19,6 @@ xv6（RISC-V）手册：https://pdos.csail.mit.edu/6.S081/2021/xv6/book-riscv-re
 
 实验报告地址：https://flare-2.gitbook.io/mit-6.s081-2021-note/
 
-6.S081官方仓库并没有在github上发布，我为了在个人git仓库中管理这些代码，将原仓库的一部分文件迁移了过来，但可能因为某些依赖原因，无法像原仓库一样实现自动评分功能，但可以正常通过make qemu启动xv6。
+6.S081官方仓库并没有在github上发布，我为了在个人git仓库中管理这些代码，将原仓库的一部分文件迁移了过来，可以正常通过make qemu启动xv6，也可以使用make grade或./grade-lab自动评分。
 # 关于作者
 lgf
