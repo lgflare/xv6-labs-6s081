@@ -6,12 +6,15 @@
 课程页面：https://pdos.csail.mit.edu/6.S081/2021/index.html
 
 xv6（RISC-V）手册：https://pdos.csail.mit.edu/6.S081/2021/xv6/book-riscv-rev2.pdf
+
 # 这份文档包括哪些内容？
 这份文档包括作者在学习该课程的过程中，阅读xv6 book后所总结的核心知识，动手实验后所写的实验报告以及其他想写的东西。
+
 # 为什么要写这份文档？
 一方面是对学习的知识和积累的工程经验做总结，梳理自己的学习和实践过程，希望能重温知识并尝试找到可改进的地方；另一方面是可以当作博客写简历里面qwq
 
 <u>尽管在学习的过程中时时刻刻感知到自己是如此的菜，但学习的目的并不是卷过别人，而是为了自我实现，所以专注于自我提高，不要妄自菲薄。</u>
+
 # 实现代码的地址
 全部实验代码：https://gitee.com/lgflare/xv6-labs-6s081
 
@@ -20,5 +23,6 @@ xv6（RISC-V）手册：https://pdos.csail.mit.edu/6.S081/2021/xv6/book-riscv-re
 实验报告地址：https://flare-2.gitbook.io/mit-6.s081-2021-note/
 
 6.S081官方仓库并没有在github上发布，我为了在个人git仓库中管理这些代码，将原仓库的一部分文件迁移了过来，可以正常通过make qemu启动xv6，或使用make qemu-gdb进行调试，也可以使用make grade或./grade-lab-xxx自动评分.
+
 # 关于作者
 lgf
