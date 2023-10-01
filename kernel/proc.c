@@ -127,6 +127,13 @@ found:
     return 0;
   }
 
+  // An empty usyscall page.
+  if((p->u_syscall = (struct usyscall*)kalloc()) == 0){
+    freeproc(p);
+    release(&p->lock);
+    return 0;
+  }
+
   // An empty user page table.
   p->pagetable = proc_pagetable(p);
   if(p->pagetable == 0){
@@ -196,6 +203,15 @@ proc_pagetable(struct proc *p)
     return 0;
   }
 
+  // map the usyscall pid
+  p->u_syscall->pid = p->pid;
+  if(mappages(pagetable, USYSCALL, PGSIZE,
+              (uint64)(p->u_syscall), PTE_R | PTE_U) < 0){
+    uvmunmap(pagetable, USYSCALL, 1, 0);
+    uvmfree(pagetable, 0);
+    return 0;
+  }
+
   return pagetable;
 }
 
@@ -206,6 +222,7 @@ proc_freepagetable(pagetable_t pagetable, uint64 sz)
 {
   uvmunmap(pagetable, TRAMPOLINE, 1, 0);
   uvmunmap(pagetable, TRAPFRAME, 1, 0);
+  uvmunmap(pagetable, USYSCALL, 1, 0);
   uvmfree(pagetable, sz);
 }
 
@@ -313,10 +330,6 @@ fork(void)
 
   acquire(&np->lock);
   np->state = RUNNABLE;
-  release(&np->lock);
-
-  acquire(&np->lock);
-  np->mask = p->mask;
   release(&np->lock);
 
   return pid;
@@ -657,17 +670,4 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
-}
-
-uint64
-count_unused_proc(void) {
-  struct proc *p;
-  uint64 cnt = 0;
-  for(p = proc; p < &proc[NPROC]; p++) {
-    acquire(&p->lock);
-    if (p->state != UNUSED)
-      cnt++;
-    release(&p->lock);
-  }
-  return cnt;
 }

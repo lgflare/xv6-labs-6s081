@@ -1,12 +1,11 @@
 #include "types.h"
 #include "riscv.h"
+#include "param.h"
 #include "defs.h"
 #include "date.h"
-#include "param.h"
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
-#include "sysinfo.h"
 
 uint64
 sys_exit(void)
@@ -47,6 +46,7 @@ sys_sbrk(void)
 
   if(argint(0, &n) < 0)
     return -1;
+  
   addr = myproc()->sz;
   if(growproc(n) < 0)
     return -1;
@@ -58,6 +58,7 @@ sys_sleep(void)
 {
   int n;
   uint ticks0;
+
 
   if(argint(0, &n) < 0)
     return -1;
@@ -73,6 +74,17 @@ sys_sleep(void)
   release(&tickslock);
   return 0;
 }
+
+
+#ifdef LAB_PGTBL
+int
+sys_pgaccess(void)
+{
+  // lab pgtbl: your code here.
+  
+  return 0;
+}
+#endif
 
 uint64
 sys_kill(void)
@@ -95,41 +107,4 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
-}
-
-// trace syscall
-uint64
-sys_trace(void) {
-  int n;
-  struct proc *p;
-  p = myproc();
-  if(argint(0, &n) < 0)
-    return -1;
-
-  acquire(&p->lock);
-  p->mask = n;
-  release(&p->lock);
-
-  return 0;
-}
-
-// sysinfo
-uint64
-sys_sysinfo(void) {
-  //invoke filestat to copy data from struct sysinfo
-  //addr is provided by user in syscall args (argaddr(0, &p))
-  struct sysinfo s_info;
-  uint64 uaddr;
-  struct proc *p;
-  p = myproc();
-  if (argaddr(0, &uaddr) < 0)
-    return -1;
-
-  s_info.freemem = count_free_mem();
-  s_info.nproc = count_unused_proc();
-
-  if(copyout(p->pagetable, uaddr, (char *)&s_info, sizeof(s_info)) < 0)
-    return -1;
-
-  return 0;
 }
