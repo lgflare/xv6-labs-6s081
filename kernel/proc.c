@@ -163,6 +163,9 @@ freeproc(struct proc *p)
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
   p->pagetable = 0;
+  if(p->u_syscall)
+    kfree((void*)p->u_syscall);
+  p->u_syscall = 0;
   p->sz = 0;
   p->pid = 0;
   p->parent = 0;
@@ -670,4 +673,28 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+int
+pgaccess(uint64 buf, int pnum, uint64 mask)
+{
+  uint64 maskbuf = 0;
+  pte_t *pte;
+  struct proc *p = myproc();
+  //vmprint(p->pagetable);
+  for(int i = 0; i < pnum; i++){
+    pte = walk(p->pagetable, buf, 1);
+    //printf("pte %p\n", *pte);
+    if(*pte & PTE_A){
+      maskbuf = maskbuf | (1 << i);
+    }else{
+      maskbuf = maskbuf & ~(1 << i);
+    }
+    buf = buf + PGSIZE;
+    *pte = *pte & ~PTE_A;
+  }
+  //printf("mask buf %p\n", maskbuf);
+  if(copyout(p->pagetable, mask, (char *)&maskbuf, sizeof(maskbuf)) < 0)
+    return -1;
+  return 0;
 }

@@ -81,8 +81,17 @@ int
 sys_pgaccess(void)
 {
   // lab pgtbl: your code here.
-  
-  return 0;
+  uint64 buf;
+  int pnum;
+  uint64 mask;
+  if(argaddr(0, &buf) < 0)
+    return -1;
+  if(argint(1, &pnum) < 0)
+    return -1;
+  if(argaddr(2, &mask) < 0)
+    return -1;
+  //printf("k buf %p pnum %d mask %p\n", buf, pnum, mask);
+  return pgaccess(buf, pnum, mask);
 }
 #endif
 

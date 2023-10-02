@@ -1,0 +1,8 @@
+refers to exec.c
+page 0: load(txt, data)
+page 1: guard page
+page 2: stack
+
+page 1 is the guard page without PTE_U so an user process cannot access it
+
+page 3 - end: heap & trapframe & trampoline
