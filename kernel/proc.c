@@ -687,11 +687,11 @@ pgaccess(uint64 buf, int pnum, uint64 mask)
     //printf("pte %p\n", *pte);
     if(*pte & PTE_A){
       maskbuf = maskbuf | (1 << i);
+      *pte = *pte & ~PTE_A;
     }else{
       maskbuf = maskbuf & ~(1 << i);
     }
     buf = buf + PGSIZE;
-    *pte = *pte & ~PTE_A;
   }
   //printf("mask buf %p\n", maskbuf);
   if(copyout(p->pagetable, mask, (char *)&maskbuf, sizeof(maskbuf)) < 0)
