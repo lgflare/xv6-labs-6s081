@@ -188,6 +188,7 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
+	$U/_alarmtest\
 
 
 
@@ -260,8 +261,8 @@ ifeq ($(LAB),util)
 endif
 
 
-fs.img: mkfs/mkfs README.md $(UEXTRA) $(UPROGS)
-	mkfs/mkfs fs.img README.md $(UEXTRA) $(UPROGS)
+fs.img: mkfs/mkfs README $(UEXTRA) $(UPROGS)
+	mkfs/mkfs fs.img README $(UEXTRA) $(UPROGS)
 
 -include kernel/*.d user/*.d
 

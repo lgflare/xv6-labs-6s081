@@ -77,8 +77,21 @@ usertrap(void)
     exit(-1);
 
   // give up the CPU if this is a timer interrupt.
-  if(which_dev == 2)
-    yield();
+  if(which_dev == 2) {
+    if (p->trapframe->epc >= 0x0 && p->trapframe->epc <= 0xb4)
+      goto SCHED;
+    if (p->trigalarm == 1) {
+      if (p->cntticks < p->ticks)
+        p->cntticks = p->cntticks + 1;
+      else if (p->cntticks == p->ticks) {
+        *(p->shadow_trapframe) = *(p->trapframe);
+        p->trapframe->epc = p->handler;
+        p->cntticks = 0;
+      }
+    }
+    SCHED:
+      yield();
+  }
 
   usertrapret();
 }
