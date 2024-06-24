@@ -37,6 +37,7 @@ void
 usertrap(void)
 {
   int which_dev = 0;
+  uint64 scause = r_scause();
 
   if((r_sstatus() & SSTATUS_SPP) != 0)
     panic("usertrap: not from user mode");
@@ -50,9 +51,8 @@ usertrap(void)
   // save user program counter.
   p->trapframe->epc = r_sepc();
   
-  if(r_scause() == 8){
+  if(scause == 8){
     // system call
-
     if(p->killed)
       exit(-1);
 
@@ -65,6 +65,26 @@ usertrap(void)
     intr_on();
 
     syscall();
+  } else if (scause == 15) {
+    // handle store page fault
+    uint64 *new_pa;
+    uint64 old_pa;
+    uint64 va;
+    pte_t *pte = 0;
+    
+    if ((new_pa = kalloc()) == 0)
+      p->killed = 1;
+
+    va = r_stval();
+    old_pa = walkaddr(p->pagetable, va);
+    memmove(new_pa, (uint64*)old_pa, PGSIZE);
+
+    pte = walk(p->pagetable, va, 0);
+    //printf("store page fault with va %p pa %p flag %p ref %d\n", va, old_pa, PTE_FLAGS(*pte), search_ref(old_pa));
+    *pte &= ~PTE_V;
+    mappages(p->pagetable, va, sizeof(uint64), (uint64)new_pa, PTE_W|PTE_X|PTE_R|PTE_U);
+    // check whether mapping succeeded
+    kfree((void*)old_pa);
   } else if((which_dev = devintr()) != 0){
     // ok
   } else {
@@ -77,21 +97,8 @@ usertrap(void)
     exit(-1);
 
   // give up the CPU if this is a timer interrupt.
-  if(which_dev == 2) {
-    if (p->trapframe->epc >= 0x0 && p->trapframe->epc <= 0xb4)
-      goto SCHED;
-    if (p->trigalarm == 1) {
-      if (p->cntticks < p->ticks)
-        p->cntticks = p->cntticks + 1;
-      else if (p->cntticks == p->ticks) {
-        *(p->shadow_trapframe) = *(p->trapframe);
-        p->trapframe->epc = p->handler;
-        p->cntticks = 0;
-      }
-    }
-    SCHED:
-      yield();
-  }
+  if(which_dev == 2)
+    yield();
 
   usertrapret();
 }

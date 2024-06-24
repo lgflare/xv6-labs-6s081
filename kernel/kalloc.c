@@ -23,6 +23,31 @@ struct {
   struct run *freelist;
 } kmem;
 
+uint8 mem_ref_cnt[(PHYSTOP - KERNBASE) / PGSIZE];
+
+void init_ref(uint64 pa) {
+  mem_ref_cnt[(pa - KERNBASE) / PGSIZE] = 1;
+  //printf("pa %p ref %x\n", pa, mem_ref_cnt[(pa - KERNBASE) / PGSIZE]);
+}
+
+void increase_ref(uint64 pa) {
+  //printf("ref %d\n", mem_ref_cnt[(pa - KERNBASE) / PGSIZE]);
+  if (search_ref(pa) == 255)
+    panic("too many refs");
+  mem_ref_cnt[(pa - KERNBASE) / PGSIZE] += 1;
+}
+
+void decrease_ref(uint64 pa) {
+  //printf("array addr = %p\n", &mem_ref_cnt);
+  if (mem_ref_cnt[(pa - KERNBASE) / PGSIZE] != 0)
+    mem_ref_cnt[(pa - KERNBASE) / PGSIZE] -= 1;
+  //printf("pa %p ref cnt %d\n", pa, mem_ref_cnt[(pa - KERNBASE) / PGSIZE]);
+}
+
+uint8 search_ref(uint64 pa) {
+  return mem_ref_cnt[(pa - KERNBASE) / PGSIZE];
+}
+
 void
 kinit()
 {
@@ -35,8 +60,12 @@ freerange(void *pa_start, void *pa_end)
 {
   char *p;
   p = (char*)PGROUNDUP((uint64)pa_start);
+  //printf("start: %p end: %p\n", pa_start, pa_end);
   for(; p + PGSIZE <= (char*)pa_end; p += PGSIZE)
+  { 
+    //printf("p: %p\n", p);
     kfree(p);
+  }
 }
 
 // Free the page of physical memory pointed at by v,
@@ -47,19 +76,23 @@ void
 kfree(void *pa)
 {
   struct run *r;
+  //uint32 idx = ((uint64)pa - KERNBASE) / PGSIZE;
 
   if(((uint64)pa % PGSIZE) != 0 || (char*)pa < end || (uint64)pa >= PHYSTOP)
     panic("kfree");
 
-  // Fill with junk to catch dangling refs.
-  memset(pa, 1, PGSIZE);
-
-  r = (struct run*)pa;
-
-  acquire(&kmem.lock);
-  r->next = kmem.freelist;
-  kmem.freelist = r;
-  release(&kmem.lock);
+  //printf("pa %p ref %x\n", pa, search_ref((uint64)pa));
+  //if (search_ref((uint64)pa) <= 1)
+  decrease_ref((uint64)pa);
+  if (search_ref((uint64)pa) == 0)
+  {
+    memset(pa, 1, PGSIZE);
+    r = (struct run*)pa;
+    acquire(&kmem.lock);
+    r->next = kmem.freelist;
+    kmem.freelist = r;
+    release(&kmem.lock);
+  }
 }
 
 // Allocate one 4096-byte page of physical memory.
@@ -69,7 +102,6 @@ void *
 kalloc(void)
 {
   struct run *r;
-
   acquire(&kmem.lock);
   r = kmem.freelist;
   if(r)
@@ -77,6 +109,10 @@ kalloc(void)
   release(&kmem.lock);
 
   if(r)
+  {
+    init_ref((uint64)r);
     memset((char*)r, 5, PGSIZE); // fill with junk
+  }
+  //printf("r = %p\n", r);
   return (void*)r;
 }
