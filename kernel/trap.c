@@ -67,24 +67,11 @@ usertrap(void)
     syscall();
   } else if (scause == 15) {
     // handle store page fault
-    uint64 *new_pa;
-    uint64 old_pa;
-    uint64 va;
-    pte_t *pte = 0;
-    
-    if ((new_pa = kalloc()) == 0)
+    uint64 va = r_stval();
+
+    if (va > p->sz || is_cowpage(p->pagetable, va) < 0 || (cow_alloc(p->pagetable, PGROUNDDOWN(va)) == 0))
       p->killed = 1;
-
-    va = r_stval();
-    old_pa = walkaddr(p->pagetable, va);
-    memmove(new_pa, (uint64*)old_pa, PGSIZE);
-
-    pte = walk(p->pagetable, va, 0);
-    //printf("store page fault with va %p pa %p flag %p ref %d\n", va, old_pa, PTE_FLAGS(*pte), search_ref(old_pa));
-    *pte &= ~PTE_V;
-    mappages(p->pagetable, va, sizeof(uint64), (uint64)new_pa, PTE_W|PTE_X|PTE_R|PTE_U);
-    // check whether mapping succeeded
-    kfree((void*)old_pa);
+    
   } else if((which_dev = devintr()) != 0){
     // ok
   } else {

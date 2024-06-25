@@ -175,6 +175,8 @@ pte_t*          walk(pagetable_t, uint64, int);
 int             copyout(pagetable_t, uint64, char *, uint64);
 int             copyin(pagetable_t, char *, uint64, uint64);
 int             copyinstr(pagetable_t, char *, uint64, uint64);
+void*           cow_alloc(pagetable_t pagetable, uint64 va);
+int             is_cowpage(pagetable_t pagetable, uint64 va);
 
 // plic.c
 void            plicinit(void);
